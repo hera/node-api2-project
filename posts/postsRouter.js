@@ -74,18 +74,15 @@ router.post("/", (req, res) => {
 router.delete("/:id", (req, res) => {
     const { id } = req.params;
 
-    db.findById(id)
-        .then(posts => {
-            if (posts.length) {
-                return db.remove(id);
+    db.remove(id)
+        .then(count => {
+            if (count) {
+                res.status(200).json(count);
             } else {
                 res.status(404).json({
                     error: "The post with the specified ID does not exist."
                 });
             }
-        })
-        .then(count => {
-            res.status(200).json(count);
         })
         .catch(error => {
             res.status(500).json({
