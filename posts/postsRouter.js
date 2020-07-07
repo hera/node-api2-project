@@ -43,4 +43,30 @@ router.get("/:id", (req, res) => {
 });
 
 
+// Add a post
+
+router.post("/", (req, res) => {
+    const newPost = {
+        title: req.body.title,
+        contents: req.body.contents
+    };
+
+    if (!newPost.title || !newPost.contents) {
+        res.status(400).json({
+            error: "Please provide title and contents for the post."
+        })
+    }
+    
+    db.insert(newPost)
+        .then(postID => {
+            res.status(201).json(postID);
+        })
+        .catch(error => {
+            res.status(500).json({
+                error: "Please provide title and contents for the post"
+            });
+        });
+});
+
+
 module.exports = router;
