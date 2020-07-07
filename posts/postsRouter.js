@@ -1,6 +1,7 @@
 const express = require("express");
 const db = require("../data/db");
 const { response } = require("express");
+const { findPostComments } = require("../data/db");
 
 const router = express.Router();
 
@@ -182,5 +183,23 @@ router.post("/:id/comments", (req, res) => {
             });
         });
 });
+
+
+// Get all comments of a post
+
+router.get("/:id/comments", (req, res) => {
+    const postId = req.params.id;
+
+    db.findPostComments(postId)
+        .then(comments => {
+            res.status(200).json(comments);
+        })
+        .catch(error => {
+            res.status(500).json({
+                error: "There was an error while saving the comment to the database"
+            });
+        });
+});
+
 
 module.exports = router;
