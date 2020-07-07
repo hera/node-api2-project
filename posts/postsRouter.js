@@ -73,20 +73,31 @@ router.post("/", (req, res) => {
 
 router.delete("/:id", (req, res) => {
     const { id } = req.params;
+    let deletedPosts = [];
 
-    db.remove(id)
-        .then(count => {
-            if (count) {
-                res.status(200).send(count);
+    db.findById(id)
+        .then(posts => {
+            if (posts.length) {
+                deletedPosts = posts;
+                return db.remove(id);
             } else {
                 res.status(404).json({
                     error: "The post with the specified ID does not exist."
                 });
             }
         })
+        .then(count => {
+            if (count) {
+                res.status(200).json(deletedPosts);
+            } else {
+                res.status(500).json({
+                    error: "Could not delete the post"
+                });
+            }
+        })
         .catch(error => {
             res.status(500).json({
-                error: "Server error. Could not delete the post."
+                error: "Could not delete the post"
             });
         });
 });
