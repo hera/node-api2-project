@@ -115,7 +115,7 @@ router.put("/:id", (req, res) => {
     if (!dataToModify.title || !dataToModify.contents) {
         res.status(400).json({
             error: "Please provide title and contents."
-        })
+        });
     }
 
     db.update(id, dataToModify)
@@ -145,5 +145,42 @@ router.put("/:id", (req, res) => {
 
 });
 
+
+// Post a comment
+
+router.post("/:id/comments", (req, res) => {
+    const comment = {
+        post_id: req.params.id,
+        text: req.body.text
+    };
+
+    if (!comment.text) {
+        res.status(400).json({
+            error: "Please provide text."
+        });
+    }
+
+    db.findById(comment.post_id)
+        .then(posts => {
+            if (posts.length) {
+                return db.insertComment(comment);
+            } else {
+                res.status(404).json({
+                    error: "The post with the specified ID does not exist."
+                });
+            }
+        })
+        .then(result => {
+            return db.findCommentById(result.id);
+        })
+        .then(savedComment => {
+            return res.status(201).json(savedComment);
+        })
+        .catch(error => {
+            res.status(500).json({
+                error: "There was an error while saving the comment to the database"
+            });
+        });
+});
 
 module.exports = router;
