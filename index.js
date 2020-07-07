@@ -7,7 +7,7 @@ const ADDRESS = "127.0.0.1";
 
 const server = express();
 
-
+server.use(express.json());
 server.use("/api/posts", postsRouter);
 
 
